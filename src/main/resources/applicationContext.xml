@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-4.3.xsd
+">
+    <!-- 声明使用注解配置-->
+    <context:annotation-config></context:annotation-config>
+    <!-- 声明spring工厂的注解扫描范围-->
+    <context:component-scan base-package="com.qf.mapper,com.qf.pojo,com.qf.service"></context:component-scan>
+        <!--1. 加载数据库文件db.properties文件 system-properties-mode="NEVER":指定的是当前
+        的用户
+        -->
+<context:property-placeholder location="db.properties" system-properties-mode="NEVER"></context:property-placeholder>
+        <!--2.加载数据源 使用alibaba的Druid数据源-->
+<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+<property name="driverClassName" value="${driver}"></property>
+<property name="url" value="${url}"></property>
+<property name="username" value="${username}"> </property>
+<property name="password" value="${password}"> </property>
+</bean>
+<bean id="sqlSessionFactory"
+      class="org.mybatis.spring.SqlSessionFactoryBean">
+<!-- 数据源-->
+<property name="dataSource" ref="dataSource"></property>
+<!-- mapper文件路径-->
+<property name="mapperLocations"
+          value="classpath:mappers/UserMapper.xml"></property>
+<!--取别名 这个包下面的所有的类的别名就是这个类的首字母 小写-->
+<property name="typeAliasesPackage" value="com.qf.pojo"></property>
+</bean>
+<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory">
+</property>
+<property name="basePackage" value="com.qf.mapper"></property>
+</bean>
+        </beans>
